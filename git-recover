@@ -1,0 +1,50 @@
+#!/bin/bash
+
+obj_dir='.git/objects/'
+
+o_dir='output/'
+
+if [ -d $o_dir ]
+then
+    if [ $1 == "-O" ] # override
+    then
+        rm -r $o_dir
+    else
+        echo "output directory exists."
+        echo ""
+        echo "usage: $0"
+        echo "  options :"
+        echo "   -O override output directory"
+        exit 1
+    fi
+fi
+mkdir $o_dir
+
+
+begins=$(ls $obj_dir)
+
+for prefix in $begins # iterating through all prefix directories
+do
+    if [ ${#prefix} -eq 2 ] # filtering out only prefix directories
+    then
+        files=$(ls "${obj_dir}$prefix")
+        mkdir "${o_dir}$prefix"
+        perfix_dir="${o_dir}$prefix/"
+
+        for elt in $files # iterating through elements in prefix directories
+        do
+            name="${prefix}$elt"
+            git cat-file -p $name 2>/dev/null > "${perfix_dir}$name"
+            if [[ $? -eq 0 ]] # if the file was a git objects
+            then
+                extension=$(exiftool -FileTypeExtension -b -S "${perfix_dir}$name" | tr '[:upper:]' '[:lower:]') # gets extension found by exiftool
+                mv "${perfix_dir}$name" "${perfix_dir}$name.$extension"
+            else # otherwise just copy it
+                rm "${perfix_dir}$name"
+                cp "${obj_dir}${prefix}/$elt" ${perfix_dir}
+            fi
+            
+        done
+    fi
+done
+
