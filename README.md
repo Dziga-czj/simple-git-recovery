@@ -1,4 +1,4 @@
-# Simple git recovery
+# Simple .git recovery
 A simple tool that recovers some files with the objects found in the .git file.
 Uses the `git cat-file` command to get the data back, and then guesses the extension with `exiftool`.
 
