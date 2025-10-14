@@ -10,7 +10,7 @@ Uses `exiftool`
 
 
 ## usage 
-put this file inside a directory with a .git file
+put this file inside a directory with a .git directory
 
 ```
 ./git-recover [options]
